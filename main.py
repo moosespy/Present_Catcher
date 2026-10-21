@@ -11,16 +11,29 @@ SCREEN_HEIGHT = 500
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Pong")
 
-
-BG = (50, 50, 50)
+BG = (135, 206, 235)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+BROWN = (139, 69, 19)
+LEAF_GREEN = (34, 139, 34)
+
+def draw_tree(surf, x, y):
+    pygame.draw.rect(surf, BROWN, [x-20, y-80, 40, 100])
+    pygame.draw.polygon(surf, LEAF_GREEN, [[x-30, y-80], [x+30, y-80], [x, y-120]])
+    pygame.draw.polygon(surf, LEAF_GREEN, [[x-40, y-60], [x+40, y-60], [x, y-100]])
+    pygame.draw.polygon(surf, LEAF_GREEN, [[x-50, y-40], [x+50, y-40], [x, y-80]])
+    pygame.draw.polygon(surf, LEAF_GREEN, [[x-60, y-20], [x+60, y-20], [x, y-60]])
+tree_xs = []
+tree_ys = []
+for i in range(5):
+    tree_xs.append(random.randint(50, 450))
+    tree_ys.append(random.randint(400, 500))
 
 clock = pygame.time.Clock()
-counter = 30
+counter = 60
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 player_speed = 8
@@ -60,7 +73,7 @@ while run:
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
         if player.colliderect(bad_block):
             score -= 1
-            block_accel -= 0.02
+            block_accel -= 0.01
             bad_block.y = 0
             block_pos.y = 0
             block_speed = 0
@@ -79,7 +92,7 @@ while run:
             run = False
         if gamestate == "game_over" and key[pygame.K_SPACE]:
             gamestate = "playing"
-            counter = 30
+            counter = 60
             score = 0
             block_speed = 0
             block_accel = 0.05
@@ -88,7 +101,10 @@ while run:
             if counter <= 0:
                 gamestate = "game_over"
     block.topleft = (block_pos.x, block_pos.y)
-    pygame.draw.rect(screen, WHITE, player)
+    pygame.draw.circle(screen, WHITE, (250, 700), 300, width=0)
+    for i in range(5):
+        draw_tree(screen, tree_xs[i], tree_ys[i])
+    pygame.draw.rect(screen, BLACK, player)
     pygame.draw.rect(screen, GREEN, block)
     pygame.draw.rect(screen, RED, bad_block)
 
@@ -101,7 +117,6 @@ while run:
         game_over_text = font.render("Game Over! Press space to play again!", True, WHITE)
         screen.blit(game_over_text, (10, 30))
     pygame.display.flip()
-
     clock.tick(60)
 
 pygame.quit()
