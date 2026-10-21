@@ -20,7 +20,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 clock = pygame.time.Clock()
-counter = 10
+counter = 30
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 player_speed = 8
@@ -29,9 +29,14 @@ block_accel = 0.05
 score = 0
 
 gamestate = "playing"
+    
+block_pos = pygame.math.Vector2(float(random.randint(0, SCREEN_WIDTH - 20)), float(0.0))
+block_width = 20.0
+block_height = 20.0
 
 player = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 40, 100, 20)
-block = pygame.Rect(random.randint(0, SCREEN_WIDTH - 20), 0, 20, 20)
+block = pygame.Rect(block_pos.x, block_pos.y, block_width, block_height)
+bad_block = pygame.Rect(random.randint(0, SCREEN_WIDTH - 20), 0, 20, 20)
 run = True
 while run:
     screen.fill(BG)
@@ -43,34 +48,49 @@ while run:
             player.x += player_speed
 
         block_speed += block_accel
-        block.y += block_speed
+        block_pos.y += block_speed
+        bad_block.y += block_speed
         if player.colliderect(block):
             score += 1
-            block_accel += 0.05
-            block.y = 0
+            block_accel += 0.01
+            bad_block.y = 0
+            block_pos.y = 0
             block_speed = 0
-            block.x = random.randint(0, SCREEN_WIDTH - 20)
-        
+            block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
+            bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
+        if player.colliderect(bad_block):
+            score -= 1
+            block_accel -= 0.02
+            bad_block.y = 0
+            block_pos.y = 0
+            block_speed = 0
+            block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
+            bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
+
         if block.top > SCREEN_HEIGHT:
-            block.y = 0
+            block_pos.y = 0
+            bad_block.y = 0
             block_speed = 0
-            block.x = random.randint(0, SCREEN_WIDTH - 20)
+            block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
+            bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if gamestate == "game_over" and key[pygame.K_SPACE]:
             gamestate = "playing"
-            counter = 10
+            counter = 30
             score = 0
             block_speed = 0
-            block_accel = 0.2
+            block_accel = 0.05
         if event.type == pygame.USEREVENT and gamestate == "playing":
             counter -= 1
             if counter <= 0:
                 gamestate = "game_over"
+    block.topleft = (block_pos.x, block_pos.y)
     pygame.draw.rect(screen, WHITE, player)
-    pygame.draw.rect(screen, RED, block)
+    pygame.draw.rect(screen, GREEN, block)
+    pygame.draw.rect(screen, RED, bad_block)
 
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
@@ -80,8 +100,9 @@ while run:
     elif gamestate == "game_over":
         game_over_text = font.render("Game Over! Press space to play again!", True, WHITE)
         screen.blit(game_over_text, (10, 30))
-    clock.tick(60)
     pygame.display.flip()
+
+    clock.tick(60)
 
 pygame.quit()
 sys.exit()
