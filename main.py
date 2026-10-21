@@ -1,13 +1,14 @@
 import pygame
 import random
 import sys
+import time
 
 pygame.init()
 font = pygame.font.SysFont(None, 36)
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Pong")
 
 
@@ -23,7 +24,8 @@ counter = 10
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 player_speed = 8
-block_speed = 5
+block_speed = 0
+block_accel = 0.05
 score = 0
 
 gamestate = "playing"
@@ -40,15 +42,18 @@ while run:
         elif key[pygame.K_RIGHT] and player.right < SCREEN_WIDTH:
             player.x += player_speed
 
+        block_speed += block_accel
         block.y += block_speed
         if player.colliderect(block):
             score += 1
-            block_speed += 0.5
+            block_accel += 0.05
             block.y = 0
+            block_speed = 0
             block.x = random.randint(0, SCREEN_WIDTH - 20)
         
         if block.top > SCREEN_HEIGHT:
             block.y = 0
+            block_speed = 0
             block.x = random.randint(0, SCREEN_WIDTH - 20)
 
     for event in pygame.event.get():
@@ -57,13 +62,16 @@ while run:
         if gamestate == "game_over" and key[pygame.K_SPACE]:
             gamestate = "playing"
             counter = 10
+            score = 0
+            block_speed = 0
+            block_accel = 0.2
         if event.type == pygame.USEREVENT and gamestate == "playing":
             counter -= 1
-            score = 0
             if counter <= 0:
                 gamestate = "game_over"
     pygame.draw.rect(screen, WHITE, player)
     pygame.draw.rect(screen, RED, block)
+
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
     if gamestate == "playing":
@@ -72,8 +80,8 @@ while run:
     elif gamestate == "game_over":
         game_over_text = font.render("Game Over! Press space to play again!", True, WHITE)
         screen.blit(game_over_text, (10, 30))
-    pygame.display.flip()
     clock.tick(60)
+    pygame.display.flip()
 
 pygame.quit()
 sys.exit()
