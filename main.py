@@ -9,7 +9,7 @@ SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
-pygame.display.set_caption("Pong")
+pygame.display.set_caption("Block Catcher")
 
 BG = (135, 206, 235)
 GREEN = (0, 255, 0)
@@ -18,6 +18,7 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BROWN = (139, 69, 19)
+LIGHT_BROWN = (196, 164, 132)
 LEAF_GREEN = (34, 139, 34)
 
 def draw_tree(surf, x, y):
@@ -26,6 +27,12 @@ def draw_tree(surf, x, y):
     pygame.draw.polygon(surf, LEAF_GREEN, [[x-40, y-60], [x+40, y-60], [x, y-100]])
     pygame.draw.polygon(surf, LEAF_GREEN, [[x-50, y-40], [x+50, y-40], [x, y-80]])
     pygame.draw.polygon(surf, LEAF_GREEN, [[x-60, y-20], [x+60, y-20], [x, y-60]])
+
+body_points = [(0, 0), (10, 60), (90, 60), (100, 0)]
+zigzag_points = [(5, 30), (7, 32), (93, 32), (95, 30)]
+player_surf = pygame.Surface((100, 60), pygame.SRCALPHA)
+pygame.draw.polygon(player_surf, LIGHT_BROWN, body_points)
+pygame.draw.polygon(player_surf, BLACK, zigzag_points)
 tree_xs = []
 tree_ys = []
 for i in range(5):
@@ -47,11 +54,26 @@ block_pos = pygame.math.Vector2(float(random.randint(0, SCREEN_WIDTH - 20)), flo
 block_width = 20.0
 block_height = 20.0
 
-player = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 40, 100, 20)
+player = player_surf.get_rect(center=(250, 450))
 block = pygame.Rect(block_pos.x, block_pos.y, block_width, block_height)
 bad_block = pygame.Rect(random.randint(0, SCREEN_WIDTH - 20), 0, 20, 20)
 run = True
 while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if gamestate == "game_over" and key[pygame.K_SPACE]:
+            gamestate = "playing"
+            counter = 60
+            score = 0
+            block_speed = 0
+            block_pos.y = 0
+            bad_block.y = 0
+            block_accel = 0.05
+        if event.type == pygame.USEREVENT and gamestate == "playing":
+            counter -= 1
+            if counter <= 0:
+                gamestate = "game_over"
     screen.fill(BG)
     key = pygame.key.get_pressed()
     if gamestate == "playing":
@@ -87,24 +109,11 @@ while run:
             block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if gamestate == "game_over" and key[pygame.K_SPACE]:
-            gamestate = "playing"
-            counter = 60
-            score = 0
-            block_speed = 0
-            block_accel = 0.05
-        if event.type == pygame.USEREVENT and gamestate == "playing":
-            counter -= 1
-            if counter <= 0:
-                gamestate = "game_over"
-    block.topleft = (block_pos.x, block_pos.y)
-    pygame.draw.circle(screen, WHITE, (250, 700), 300, width=0)
+    block.topleft = (round(block_pos.x), round(block_pos.y))
+    pygame.draw.circle(screen, WHITE, (250, 1000), 600, width=0)
     for i in range(5):
         draw_tree(screen, tree_xs[i], tree_ys[i])
-    pygame.draw.rect(screen, BLACK, player)
+    screen.blit(player_surf, player)
     pygame.draw.rect(screen, GREEN, block)
     pygame.draw.rect(screen, RED, bad_block)
 
