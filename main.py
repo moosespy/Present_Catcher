@@ -59,6 +59,14 @@ def draw_present():
 draw_present()
 block_pos = present_surf.get_rect(center=((random.randint(0, SCREEN_WIDTH - 20)), 0))
 
+def draw_obstacle():
+    global obst_surf
+    obst_points = [(0, 10), (3, 13), (1, 15), (7, 18), (10, 20), (13, 15), (20, 10), (18, 2), (10, 0), (8, 0)]
+    obst_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
+    pygame.draw.polygon(obst_surf, BLACK, obst_points)
+draw_obstacle()
+bad_block = obst_surf.get_rect(center=((SCREEN_WIDTH - block_pos.x), 0))
+
 clock = pygame.time.Clock()
 counter = 60
 pygame.time.set_timer(pygame.USEREVENT, 1000)
@@ -70,7 +78,6 @@ score = 0
 
 gamestate = "playing"
 
-bad_block = pygame.Rect(random.randint(0, SCREEN_WIDTH - 20), 0, 20, 20)
 run = True
 while run:
     for event in pygame.event.get():
@@ -128,7 +135,7 @@ while run:
         draw_tree(screen, tree_xs[i], tree_ys[i])
     screen.blit(player_surf, player)
     screen.blit(present_surf, block_pos)
-    pygame.draw.rect(screen, RED, bad_block)
+    screen.blit(obst_surf, bad_block)
 
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
