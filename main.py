@@ -30,9 +30,13 @@ def draw_tree(surf, x, y):
 
 body_points = [(0, 0), (10, 60), (90, 60), (100, 0)]
 zigzag_points = [(5, 30), (7, 32), (93, 32), (95, 30)]
+bl2_points = [(2, 15), (3, 18), (97, 18), (98, 15)]
+bl3_points = [(8, 45), (9, 47), (91, 47), (92, 45)]
 player_surf = pygame.Surface((100, 60), pygame.SRCALPHA)
 pygame.draw.polygon(player_surf, LIGHT_BROWN, body_points)
 pygame.draw.polygon(player_surf, BLACK, zigzag_points)
+pygame.draw.polygon(player_surf, BLUE, bl2_points)
+pygame.draw.polygon(player_surf, BLUE, bl3_points)
 tree_xs = []
 tree_ys = []
 for i in range(5):
