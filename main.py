@@ -21,6 +21,15 @@ BROWN = (139, 69, 19)
 LIGHT_BROWN = (196, 164, 132)
 LEAF_GREEN = (34, 139, 34)
 
+particles = []
+def draw_snow():
+    x = random.randint(0, SCREEN_WIDTH)
+    y = random.randint(-20, 0)
+    vel_x = random.uniform(-0.5, 0.5)
+    vel_y = random.uniform(2.1, 4.4)
+    radius = random.uniform(2, 7)
+    return [[x, y], [vel_x, vel_y], radius]
+
 def draw_tree(surf, x, y):
     pygame.draw.rect(surf, BROWN, [x-20, y-80, 40, 100])
     pygame.draw.polygon(surf, LEAF_GREEN, [[x-30, y-80], [x+30, y-80], [x, y-120]])
@@ -96,6 +105,17 @@ while run:
             if counter <= 0:
                 gamestate = "game_over"
     screen.fill(BG)
+    for _ in range(2):
+        particles.append(draw_snow())
+    for particle in particles[::-1]:
+        particle[0][0] += particle[1][0]
+        particle[0][1] += particle[1][1]
+        if particle[0][1] > SCREEN_HEIGHT:
+            particles.remove(particle)
+    for particle in particles:
+        position = (int(particle[0][0]), int(particle[0][1]))
+        radius = int(particle[2])
+        pygame.draw.circle(screen, WHITE, position, radius)
     key = pygame.key.get_pressed()
     if gamestate == "playing":
         if key[pygame.K_LEFT] and player.left > 0:
