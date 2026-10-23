@@ -100,6 +100,13 @@ while run:
             block_pos.y = 0
             bad_block.y = 0
             block_accel = 0.05
+        if event.type == pygame.KEYDOWN:
+            if gamestate == "paused":
+                if event.key == pygame.K_p:
+                    gamestate = "playing"
+            elif gamestate == "playing":
+                if event.key == pygame.K_p:
+                    gamestate = "paused"
         if event.type == pygame.USEREVENT and gamestate == "playing":
             counter -= 1
             if counter <= 0:
@@ -164,6 +171,9 @@ while run:
     elif gamestate == "menu":
         menu_text = font.render("Press space to start!", True, WHITE)
         screen.blit(menu_text, (10, 30))
+    elif gamestate == "paused":
+        paused_text = font.render("Game Paused", True, BLACK)
+        screen.blit(paused_text, (170, 230))
     pygame.display.flip()
     clock.tick(60)
 
