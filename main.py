@@ -85,7 +85,21 @@ block_speed = 0
 block_accel = 0.05
 score = 0
 
-gamestate = "playing"
+gamestate = "start"
+
+def menu():
+    key = pygame.key.get_pressed()
+    text = font.render("Press Space to start!", True, WHITE)
+    screen.blit(text, (10, 30))
+    if key[pygame.K_SPACE]:
+        for i in range(3, 0, -1):
+            text = font.render(f"Starting in {i}:")
+            screen.blit(text, (10, 30))
+            time.sleep(1)
+        text = font.render("Catch the Presents!")
+        screen.blit(text)
+        time.sleep(1)
+        gamestate = "playing"
 
 run = True
 while run:
@@ -105,17 +119,18 @@ while run:
             if counter <= 0:
                 gamestate = "game_over"
     screen.fill(BG)
-    for _ in range(2):
-        particles.append(draw_snow())
-    for particle in particles[::-1]:
-        particle[0][0] += particle[1][0]
-        particle[0][1] += particle[1][1]
-        if particle[0][1] > SCREEN_HEIGHT:
-            particles.remove(particle)
-    for particle in particles:
-        position = (int(particle[0][0]), int(particle[0][1]))
-        radius = int(particle[2])
-        pygame.draw.circle(screen, WHITE, position, radius)
+    if gamestate == "playing":
+        for _ in range(2):
+            particles.append(draw_snow())
+        for particle in particles[::-1]:
+            particle[0][0] += particle[1][0]
+            particle[0][1] += particle[1][1]
+            if particle[0][1] > SCREEN_HEIGHT:
+                particles.remove(particle)
+        for particle in particles:
+            position = (int(particle[0][0]), int(particle[0][1]))
+            radius = int(particle[2])
+            pygame.draw.circle(screen, WHITE, position, radius)
     key = pygame.key.get_pressed()
     if gamestate == "playing":
         if key[pygame.K_LEFT] and player.left > 0:
@@ -165,6 +180,8 @@ while run:
     elif gamestate == "game_over":
         game_over_text = font.render("Game Over! Press space to play again!", True, WHITE)
         screen.blit(game_over_text, (10, 30))
+    if gamestate == "start":
+        menu()
     pygame.display.flip()
     clock.tick(60)
 
