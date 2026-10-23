@@ -11,15 +11,25 @@ SCREEN_HEIGHT = 500
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Block Catcher")
 
-BG = (135, 206, 235)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-BROWN = (139, 69, 19)
-LIGHT_BROWN = (196, 164, 132)
-LEAF_GREEN = (34, 139, 34)
+def draw_bg(width, height, color_top, color_bottom):
+    bg_surface = pygame.Surface((1, 2))
+    bg_surface.set_at((0, 0), color_top)
+    bg_surface.set_at((0, 1), color_bottom)
+    gradient_surface = pygame.transform.smoothscale(bg_surface, (width, height))
+    return gradient_surface
+
+LIGHT_BLUE = [135, 206, 235]
+MIDNIGHT_BLUE = [25, 25, 112]
+GREEN = [0, 255, 0]
+RED = [255, 0, 0]
+BLUE = [0, 0, 255]
+BLACK = [0, 0, 0]
+WHITE = [255, 255, 255]
+BROWN = [139, 69, 19]
+LIGHT_BROWN = [196, 164, 132]
+LEAF_GREEN = [34, 139, 34]
+
+background = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
 
 particles = []
 def draw_snow():
@@ -111,7 +121,7 @@ while run:
             counter -= 1
             if counter <= 0:
                 gamestate = "menu"
-    screen.fill(BG)
+    screen.blit(background, (0, 0))
     for _ in range(2):
         particles.append(draw_snow())
     for particle in particles[::-1]:
@@ -134,7 +144,8 @@ while run:
         bad_block.y += block_speed
         if player.colliderect(block_pos):
             score += 1
-            block_accel += 0.01
+            if block_accel < 0.11:
+                block_accel += 0.01
             bad_block.y = 0
             block_pos.y = 0
             block_speed = 0
@@ -142,7 +153,8 @@ while run:
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
         if player.colliderect(bad_block):
             score -= 1
-            block_accel -= 0.01
+            if block_accel > 0.01:
+                block_accel -= 0.01
             bad_block.y = 0
             block_pos.y = 0
             block_speed = 0
