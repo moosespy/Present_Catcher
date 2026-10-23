@@ -85,28 +85,14 @@ block_speed = 0
 block_accel = 0.05
 score = 0
 
-gamestate = "start"
-
-def menu():
-    key = pygame.key.get_pressed()
-    text = font.render("Press Space to start!", True, WHITE)
-    screen.blit(text, (10, 30))
-    if key[pygame.K_SPACE]:
-        for i in range(3, 0, -1):
-            text = font.render(f"Starting in {i}:")
-            screen.blit(text, (10, 30))
-            time.sleep(1)
-        text = font.render("Catch the Presents!")
-        screen.blit(text)
-        time.sleep(1)
-        gamestate = "playing"
-
+gamestate = "menu"
 run = True
 while run:
+    key = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if gamestate == "game_over" and key[pygame.K_SPACE]:
+        if gamestate == "menu" and key[pygame.K_SPACE]:
             gamestate = "playing"
             counter = 60
             score = 0
@@ -117,21 +103,19 @@ while run:
         if event.type == pygame.USEREVENT and gamestate == "playing":
             counter -= 1
             if counter <= 0:
-                gamestate = "game_over"
+                gamestate = "menu"
     screen.fill(BG)
-    if gamestate == "playing":
-        for _ in range(2):
-            particles.append(draw_snow())
-        for particle in particles[::-1]:
-            particle[0][0] += particle[1][0]
-            particle[0][1] += particle[1][1]
-            if particle[0][1] > SCREEN_HEIGHT:
-                particles.remove(particle)
-        for particle in particles:
-            position = (int(particle[0][0]), int(particle[0][1]))
-            radius = int(particle[2])
-            pygame.draw.circle(screen, WHITE, position, radius)
-    key = pygame.key.get_pressed()
+    for _ in range(2):
+        particles.append(draw_snow())
+    for particle in particles[::-1]:
+        particle[0][0] += particle[1][0]
+        particle[0][1] += particle[1][1]
+        if particle[0][1] > SCREEN_HEIGHT:
+            particles.remove(particle)
+    for particle in particles:
+        position = (int(particle[0][0]), int(particle[0][1]))
+        radius = int(particle[2])
+        pygame.draw.circle(screen, WHITE, position, radius)
     if gamestate == "playing":
         if key[pygame.K_LEFT] and player.left > 0:
             player.x -= player_speed
@@ -177,11 +161,9 @@ while run:
     if gamestate == "playing":
         time_text = font.render(f"Time: {counter}", True, WHITE)
         screen.blit(time_text, (10, 30))
-    elif gamestate == "game_over":
-        game_over_text = font.render("Game Over! Press space to play again!", True, WHITE)
-        screen.blit(game_over_text, (10, 30))
-    if gamestate == "start":
-        menu()
+    elif gamestate == "menu":
+        menu_text = font.render("Press space to start!", True, WHITE)
+        screen.blit(menu_text, (10, 30))
     pygame.display.flip()
     clock.tick(60)
 
