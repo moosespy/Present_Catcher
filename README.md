@@ -1,1 +1,7 @@
 # pong
+
+It's almost Halloween, I know, but look in the department stores - you'll see winter stuff starting to pop up! Here's another example of that: Present Catcher! 
+
+It's an outdoors-based game in the winter, where you try to catch presents with your basket. They'll only fall for 60 seconds, though... maybe someone flew by and accidentally dropped some of his load? Anyways, there isn't infinite presents falling from the sky, so have fast reflexes. However, there's coal dropping, too, since it's not just presents given out during the holidays. Be careful not to catch any coal, it's going to decrease the value of your presents once it smears it!
+
+Have fun!
