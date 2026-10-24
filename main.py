@@ -26,10 +26,12 @@ BLUE = [0, 0, 255]
 BLACK = [0, 0, 0]
 WHITE = [255, 255, 255]
 BROWN = [139, 69, 19]
+GOLD = [225, 165, 30]
 LIGHT_BROWN = [196, 164, 132]
 LEAF_GREEN = [34, 139, 34]
 
-background = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
+sky_bg = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
+village_bg = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
 
 particles = []
 def draw_snow():
@@ -94,11 +96,12 @@ player_speed = 8
 block_speed = 0
 block_accel = 0.05
 score = 0
-
+background = sky_bg
 gamestate = "menu"
 run = True
 while run:
     key = pygame.key.get_pressed()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -111,17 +114,22 @@ while run:
             bad_block.y = 0
             block_accel = 0.05
         if event.type == pygame.KEYDOWN:
-            if gamestate == "paused":
-                if event.key == pygame.K_p:
+            if event.key == pygame.K_p:
+                if gamestate == "paused":
                     gamestate = "playing"
-            elif gamestate == "playing":
-                if event.key == pygame.K_p:
+                elif gamestate == "playing":
                     gamestate = "paused"
+            elif event.key == pygame.K_1:
+                background = sky_bg
+            elif event.key == pygame.K_2:
+                background = village_bg
         if event.type == pygame.USEREVENT and gamestate == "playing":
             counter -= 1
             if counter <= 0:
                 gamestate = "menu"
+    
     screen.blit(background, (0, 0))
+    
     for _ in range(2):
         particles.append(draw_snow())
     for particle in particles[::-1]:
