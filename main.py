@@ -92,7 +92,8 @@ def draw_obstacle():
     obst_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
     pygame.draw.polygon(obst_surf, BLACK, obst_points)
 draw_obstacle()
-bad_block = obst_surf.get_rect(center=((SCREEN_WIDTH - block_pos.x), 0))
+bad_block = obst_surf.get_rect(center=((random.randint(0, SCREEN_WIDTH - 20)), 0))
+b_block2 = obst_surf.get_rect(center=((SCREEN_WIDTH - bad_block.x), 0))
 
 def draw_light_circle(color, radius):
     global glow_surf
@@ -131,6 +132,7 @@ while run:
             block_speed = 0
             block_pos.y = 0
             bad_block.y = 0
+            b_block2.y = 0
             block_accel = 0.05
         if event.type == pygame.KEYDOWN:
             #pause state
@@ -185,31 +187,38 @@ while run:
         block_speed += block_accel
         block_pos.y += block_speed
         bad_block.y += block_speed
+        b_block2.y += block_speed
         if player.colliderect(block_pos):
             score += 1
             if block_accel < 0.11:
                 block_accel += 0.01
             bad_block.y = 0
+            b_block2.y = 0
             block_pos.y = 0
             block_speed = 0
             block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
-        if player.colliderect(bad_block):
+            b_block2.x = SCREEN_WIDTH - bad_block.x
+        if player.colliderect(bad_block) or player.colliderect(b_block2):
             score -= 1
             if block_accel > 0.01:
                 block_accel -= 0.01
             bad_block.y = 0
+            b_block2.y = 0
             block_pos.y = 0
             block_speed = 0
             block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
+            b_block2.x = SCREEN_WIDTH - bad_block.x
 
         if block_pos.top > SCREEN_HEIGHT:
             block_pos.y = 0
             bad_block.y = 0
+            b_block2.y = 0
             block_speed = 0
             block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
+            b_block2.x = SCREEN_WIDTH - bad_block.x
 
     #Drawing everything
     pygame.draw.circle(screen, WHITE, (250, 1000), 600, width=0)
@@ -218,7 +227,8 @@ while run:
     screen.blit(player_surf, player)
     screen.blit(present_surf, block_pos)
     screen.blit(obst_surf, bad_block)
-    screen.blit(glow, glow_rect, special_flags=pygame.BLEND_RGBA_ADD)
+    screen.blit(obst_surf, (b_block2))
+    #screen.blit(glow, glow_rect, special_flags=pygame.BLEND_RGBA_ADD)
     #On-screen text
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
