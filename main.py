@@ -60,15 +60,13 @@ for i in range(5):
 
 def draw_player():
     global player_surf
-    body_points = [(0, 0), (10, 60), (90, 60), (100, 0)]
-    zigzag_points = [(5, 30), (7, 32), (93, 32), (95, 30)]
-    bl2_points = [(2, 15), (3, 18), (97, 18), (98, 15)]
-    bl3_points = [(8, 45), (9, 47), (91, 47), (92, 45)]
+    body_points = [(0, 0), (10, 50), (30, 60), (70, 60), (90, 50), (100, 0)]
+    zigzag_points = [(5, 30), (20, 40), (35, 30), (50, 40), (65, 30), (80, 40), (95, 30), (95, 32), (80, 42), (65, 32), (50, 42), (35, 32), (20, 42), (5, 32)]
+    bl2_points = [(0, 0), (0, 20), (100, 20), (100, 0)]
     player_surf = pygame.Surface((100, 60), pygame.SRCALPHA)
     pygame.draw.polygon(player_surf, LIGHT_BROWN, body_points)
     pygame.draw.polygon(player_surf, BLACK, zigzag_points)
-    pygame.draw.polygon(player_surf, BLUE, bl2_points)
-    pygame.draw.polygon(player_surf, BLUE, bl3_points)
+    pygame.draw.polygon(player_surf, GOLD, bl2_points)
 draw_player()
 player = player_surf.get_rect(center=(250, 450))
 
@@ -104,7 +102,7 @@ def draw_light_circle(color, radius):
         alpha = int((1 - (i / radius))**2.5 * 255)
         pygame.draw.circle(glow_surf, (*color, alpha), (radius, radius), i)
     return glow_surf
-glow = draw_light_circle(GOLD, 100)
+glow = draw_light_circle(GOLD, 20)
 
 #timer settings
 clock = pygame.time.Clock()
@@ -161,7 +159,7 @@ while run:
     
     screen.blit(background, (0, 0))
     
-    glow_rect = glow.get_rect(center=((player.x + 50), (player.y + 30)))
+    #glow_rect = glow.get_rect(center=((block_pos.x + 10), (block_pos.y + 17)))
 
     #snow
     for _ in range(1):
