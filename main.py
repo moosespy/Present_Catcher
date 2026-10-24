@@ -11,7 +11,7 @@ SCREEN_HEIGHT = 500
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Block Catcher")
 
-def draw_bg(width, height, color_top, color_bottom):
+def draw_gradient(width, height, color_top, color_bottom):
     bg_surface = pygame.Surface((1, 2))
     bg_surface.set_at((0, 0), color_top)
     bg_surface.set_at((0, 1), color_bottom)
@@ -30,8 +30,8 @@ GOLD = [225, 165, 30]
 LIGHT_BROWN = [196, 164, 132]
 LEAF_GREEN = [34, 139, 34]
 
-sky_bg = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
-village_bg = draw_bg(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
+sky_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
+village_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
 
 particles = []
 def draw_snow():
@@ -70,13 +70,17 @@ player = player_surf.get_rect(center=(250, 450))
 
 def draw_present():
     global present_surf
-    present_points = [(0, 0), (0, 20), (20, 20), (20, 0)]
-    ribbon_points = [(0, 8), (0, 12), (8, 12), (8, 20), (12, 20), (12, 12), (20, 12), (20, 8), (12, 8), (12, 0), (8, 0), (8, 8)]
-    present_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
+    present_points = [(0, 10), (0, 30), (20, 30), (20, 10)]
+    cross_points = [(0, 18), (0, 22), (8, 22), (8, 30), (12, 30), (12, 22), (20, 22), (20, 18), (12, 18), (12, 10), (8, 10), (8, 18)]
+    left_ribbon_points = [(10, 7), (2, 1), (0, 3), (8, 5), (0, 7), (2, 9)]
+    right_ribbon_points = [(10, 7), (18, 1), (20, 3), (12, 5), (20, 7), (18, 9)]
+    present_surf = pygame.Surface((20, 30), pygame.SRCALPHA)
     color = [RED, GREEN, BLUE]
     present_color = color[random.randint(0, 2)]
-    pygame.draw.polygon(present_surf, GREEN, present_points, width=0)
-    pygame.draw.polygon(present_surf, BLUE, ribbon_points, width=0)
+    pygame.draw.polygon(present_surf, GREEN, present_points)
+    pygame.draw.polygon(present_surf, RED, cross_points)
+    pygame.draw.polygon(present_surf, RED, left_ribbon_points)
+    pygame.draw.polygon(present_surf, RED, right_ribbon_points)
 draw_present()
 block_pos = present_surf.get_rect(center=((random.randint(0, SCREEN_WIDTH - 20)), 0))
 
