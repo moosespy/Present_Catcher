@@ -96,6 +96,16 @@ def draw_obstacle():
 draw_obstacle()
 bad_block = obst_surf.get_rect(center=((SCREEN_WIDTH - block_pos.x), 0))
 
+def draw_light_circle(color, radius):
+    global glow_surf
+    global alpha
+    glow_surf = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+    for i in range(radius, 0, -1):
+        alpha = int((1 - (i / radius))**2.5 * 255)
+        pygame.draw.circle(glow_surf, (*color, alpha), (radius, radius), i)
+    return glow_surf
+glow = draw_light_circle(GOLD, 100)
+
 #timer settings
 clock = pygame.time.Clock()
 counter = 60
@@ -110,7 +120,7 @@ gamestate = "menu"
 run = True
 while run:
     key = pygame.key.get_pressed()
-    
+    prev_score = score
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             #needed to make pygame work
@@ -146,18 +156,21 @@ while run:
     
     screen.blit(background, (0, 0))
     
+    glow_rect = glow.get_rect(center=((player.x + 50), (player.y + 30)))
+
     #snow
     for _ in range(1):
         particles.append(draw_snow())
-    for particle in particles[::-1]:
+    new_particles = []
+    for particle in particles:
         particle[0][0] += particle[1][0]
         particle[0][1] += particle[1][1]
-        if particle[0][1] > SCREEN_HEIGHT:
-            particles.remove(particle)
-    for particle in particles:
-        position = (int(particle[0][0]), int(particle[0][1]))
-        radius = int(particle[2])
-        pygame.draw.circle(screen, WHITE, position, radius)
+        if particle[0][1] <= SCREEN_HEIGHT:
+            new_particles.append(particle)
+            position = (int(particle[0][0]), int(particle[0][1]))
+            radius = int(particle[2])
+            pygame.draw.circle(screen, WHITE, position, radius)
+    particles = new_particles
     
     #main animations: player movement, present/coal movement, collision detection
     if gamestate == "playing":
@@ -202,7 +215,7 @@ while run:
     screen.blit(player_surf, player)
     screen.blit(present_surf, block_pos)
     screen.blit(obst_surf, bad_block)
-
+    screen.blit(glow, glow_rect, special_flags=pygame.BLEND_RGBA_ADD)
     #On-screen text
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
