@@ -32,8 +32,8 @@ LIGHT_BROWN = [196, 164, 132]
 LEAF_GREEN = [34, 139, 34]
 
 #backgrounds
-sky_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
-village_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
+day_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
+sunset_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
 night_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, BLACK)
 
 #What each thing looks like: snow, trees, player, present, obstacle
@@ -115,7 +115,7 @@ player_speed = 8
 block_speed = 0
 block_accel = 0.05
 score = 0
-background = sky_bg
+background = day_bg
 gamestate = "menu"
 run = True
 while run:
@@ -143,16 +143,21 @@ while run:
                     gamestate = "paused"
             #backgrounds
             elif event.key == pygame.K_1:
-                background = sky_bg
+                background = day_bg
             elif event.key == pygame.K_2:
-                background = village_bg
+                background = sunset_bg
             elif event.key == pygame.K_3:
                 background = night_bg
         if event.type == pygame.USEREVENT and gamestate == "playing":
             #timer
             counter -= 1
+            if 20 < counter < 41:
+                background = sunset_bg
+            if counter < 21:
+                background = night_bg
             if counter <= 0:
                 gamestate = "menu"
+                background = day_bg
     
     screen.blit(background, (0, 0))
     
