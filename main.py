@@ -18,6 +18,7 @@ def draw_gradient(width, height, color_top, color_bottom):
     gradient_surface = pygame.transform.smoothscale(bg_surface, (width, height))
     return gradient_surface
 
+#colors
 LIGHT_BLUE = [135, 206, 235]
 MIDNIGHT_BLUE = [25, 25, 112]
 GREEN = [0, 255, 0]
@@ -30,9 +31,12 @@ GOLD = [225, 165, 30]
 LIGHT_BROWN = [196, 164, 132]
 LEAF_GREEN = [34, 139, 34]
 
+#backgrounds
 sky_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, LIGHT_BLUE)
 village_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, GOLD)
+night_bg = draw_gradient(SCREEN_WIDTH, SCREEN_HEIGHT, MIDNIGHT_BLUE, BLACK)
 
+#What each thing looks like: snow, trees, player, present, obstacle
 particles = []
 def draw_snow():
     x = random.randint(0, SCREEN_WIDTH)
@@ -92,6 +96,7 @@ def draw_obstacle():
 draw_obstacle()
 bad_block = obst_surf.get_rect(center=((SCREEN_WIDTH - block_pos.x), 0))
 
+#timer settings
 clock = pygame.time.Clock()
 counter = 60
 pygame.time.set_timer(pygame.USEREVENT, 1000)
@@ -108,8 +113,10 @@ while run:
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            #needed to make pygame work
             run = False
         if gamestate == "menu" and key[pygame.K_SPACE]:
+            #restart code/start code
             gamestate = "playing"
             counter = 60
             score = 0
@@ -118,23 +125,29 @@ while run:
             bad_block.y = 0
             block_accel = 0.05
         if event.type == pygame.KEYDOWN:
+            #pause state
             if event.key == pygame.K_p:
                 if gamestate == "paused":
                     gamestate = "playing"
                 elif gamestate == "playing":
                     gamestate = "paused"
+            #backgrounds
             elif event.key == pygame.K_1:
                 background = sky_bg
             elif event.key == pygame.K_2:
                 background = village_bg
+            elif event.key == pygame.K_3:
+                background = night_bg
         if event.type == pygame.USEREVENT and gamestate == "playing":
+            #timer
             counter -= 1
             if counter <= 0:
                 gamestate = "menu"
     
     screen.blit(background, (0, 0))
     
-    for _ in range(2):
+    #snow
+    for _ in range(1):
         particles.append(draw_snow())
     for particle in particles[::-1]:
         particle[0][0] += particle[1][0]
@@ -145,6 +158,8 @@ while run:
         position = (int(particle[0][0]), int(particle[0][1]))
         radius = int(particle[2])
         pygame.draw.circle(screen, WHITE, position, radius)
+    
+    #main animations: player movement, present/coal movement, collision detection
     if gamestate == "playing":
         if key[pygame.K_LEFT] and player.left > 0:
             player.x -= player_speed
@@ -180,6 +195,7 @@ while run:
             block_pos.x = random.randint(0, SCREEN_WIDTH - 20)
             bad_block.x = random.randint(0, SCREEN_WIDTH - 20)
 
+    #Drawing everything
     pygame.draw.circle(screen, WHITE, (250, 1000), 600, width=0)
     for i in range(5):
         draw_tree(screen, tree_xs[i], tree_ys[i])
@@ -187,6 +203,7 @@ while run:
     screen.blit(present_surf, block_pos)
     screen.blit(obst_surf, bad_block)
 
+    #On-screen text
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
     if gamestate == "playing":
@@ -198,6 +215,7 @@ while run:
     elif gamestate == "paused":
         paused_text = font.render("Game Paused", True, BLACK)
         screen.blit(paused_text, (170, 230))
+    
     pygame.display.flip()
     clock.tick(60)
 
