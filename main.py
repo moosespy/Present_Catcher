@@ -103,7 +103,7 @@ def draw_light_circle(color, radius):
         alpha = int((1 - (i / radius))**2.5 * 255)
         pygame.draw.circle(glow_surf, (*color, alpha), (radius, radius), i)
     return glow_surf
-glow = draw_light_circle(GOLD, 20)
+glow = draw_light_circle(GOLD, 50)
 
 #timer settings
 clock = pygame.time.Clock()
@@ -117,6 +117,7 @@ score = 0
 background = day_bg
 gamestate = "menu"
 run = True
+glow_rect = glow.get_rect(center=(250, 50))
 while run:
     key = pygame.key.get_pressed()
     prev_score = score
@@ -151,17 +152,25 @@ while run:
         if event.type == pygame.USEREVENT and gamestate == "playing":
             #timer
             counter -= 1
+            if 40 < counter < 61:
+                background = day_bg
+                block_accel = 0.1
+                glow_rect = glow.get_rect(center=(250, 50))
             if 20 < counter < 41:
                 background = sunset_bg
+                block_accel = 0.15
+                glow_rect = glow.get_rect(center=(400, 250))
             if counter < 21:
                 background = night_bg
+                block_accel = 0.2
+                glow_rect = glow.get_rect(center=(700, 700))
             if counter <= 0:
                 gamestate = "menu"
                 background = day_bg
+                block_accel = 0.05
+                glow_rect = glow.get_rect(center=(250, 100))
     
     screen.blit(background, (0, 0))
-    
-    #glow_rect = glow.get_rect(center=((block_pos.x + 10), (block_pos.y + 17)))
 
     #snow
     for _ in range(1):
@@ -190,8 +199,6 @@ while run:
         b_block2.y += block_speed
         if player.colliderect(block_pos):
             score += 1
-            if block_accel < 0.11:
-                block_accel += 0.01
             bad_block.y = 0
             b_block2.y = 0
             block_pos.y = 0
@@ -201,8 +208,6 @@ while run:
             b_block2.x = SCREEN_WIDTH - bad_block.x
         if player.colliderect(bad_block) or player.colliderect(b_block2):
             score -= 1
-            if block_accel > 0.01:
-                block_accel -= 0.01
             bad_block.y = 0
             b_block2.y = 0
             block_pos.y = 0
@@ -228,7 +233,8 @@ while run:
     screen.blit(present_surf, block_pos)
     screen.blit(obst_surf, bad_block)
     screen.blit(obst_surf, (b_block2))
-    #screen.blit(glow, glow_rect, special_flags=pygame.BLEND_RGBA_ADD)
+    if gamestate == "playing":
+        screen.blit(glow, glow_rect, special_flags=pygame.BLEND_RGBA_ADD)
     #On-screen text
     score_text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(score_text, (10, 10))
